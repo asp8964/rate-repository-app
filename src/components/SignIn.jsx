@@ -4,6 +4,8 @@ import * as yup from "yup";
 import Text from "./Text";
 import theme from "../theme";
 import { yupResolver } from "@hookform/resolvers/yup";
+import useSignIn from "../hooks/useSignIn";
+import { useNavigate } from "react-router-native";
 
 const styles = StyleSheet.create({
   container: {
@@ -59,6 +61,9 @@ const schema = yup
   .required();
 
 const SignIn = () => {
+  const [signIn] = useSignIn();
+  const navigate = useNavigate();
+
   const {
     control,
     handleSubmit,
@@ -70,8 +75,17 @@ const SignIn = () => {
     },
     resolver: yupResolver(schema),
   });
-  const onSubmit = (values) => {
-    console.log(values);
+
+  const onSubmit = async (values) => {
+    const { username, password } = values;
+
+    try {
+      const data = await signIn({ username, password });
+      console.log(data);
+      navigate("/");
+    } catch (e) {
+      console.log(e);
+    }
   };
   return (
     <>

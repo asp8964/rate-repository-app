@@ -6,6 +6,7 @@ import js from "@eslint/js";
 import globals from "globals";
 
 export default defineConfig([
+  { languageOptions: { globals: globals.node } },
   js.configs.recommended,
   reactPlugin.configs.flat.recommended,
   reactPlugin.configs.flat["jsx-runtime"],
@@ -28,7 +29,10 @@ export default defineConfig([
         },
       },
       globals: {
+        // ...globals.browser,
         ...globals.node,
+        console: true,
+        process: true,
       },
     },
     rules: {
