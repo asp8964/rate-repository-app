@@ -22,6 +22,11 @@ export default {
       backgroundColor: "#ffffff",
     },
     edgeToEdgeEnabled: true,
+    networkSecurityConfig: {
+      domainConfigurations: {
+        cleartext: [{ domain: "192.168.31.5" }],
+      },
+    },
   },
   web: {
     favicon: "./assets/favicon.png",

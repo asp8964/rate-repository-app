@@ -3,19 +3,28 @@ import { useForm } from "react-hook-form";
 import * as yup from "yup";
 import { formStyle } from "../theme";
 import { yupResolver } from "@hookform/resolvers/yup";
-import useSignIn from "../hooks/useSignIn";
 import { useNavigate } from "react-router-native";
 import FormInput from "./BaseForm/FormInput";
 import FormButton from "./BaseForm/FormButton";
+import useSignUp from "../hooks/useSignUp";
+import useSignIn from "../hooks/useSignIn";
 
 const schema = yup
   .object({
-    username: yup.string().required("Username is require"),
-    password: yup.string().required("Password is require"),
+    username: yup.string().required("Username is require").min(5).max(30),
+    password: yup.string().required("Password is require").min(5).max(50),
+    passwordConfirm: yup
+      .string()
+      .oneOf(
+        [yup.ref("password"), null],
+        "Password confirmation must match the Password"
+      )
+      .required("Password Confirm is require"),
   })
   .required();
 
-const SignIn = () => {
+const SignUp = () => {
+  const [signUp] = useSignUp();
   const [signIn] = useSignIn();
   const navigate = useNavigate();
 
@@ -23,17 +32,18 @@ const SignIn = () => {
     const { username, password } = values;
 
     try {
-      const data = await signIn({ username, password });
-      console.log(data);
+      await signUp({ username, password });
+      await signIn({ username, password });
+      // console.log(data);
       navigate("/");
     } catch (e) {
       console.log(e);
     }
   };
-  return <SignInForm onSubmit={onSubmit} />;
+  return <SignUpForm onSubmit={onSubmit} />;
 };
 
-export const SignInForm = ({ onSubmit }) => {
+export const SignUpForm = ({ onSubmit }) => {
   const {
     control,
     handleSubmit,
@@ -42,6 +52,7 @@ export const SignInForm = ({ onSubmit }) => {
     defaultValues: {
       username: "",
       password: "",
+      passwordConfirm: "",
     },
     resolver: yupResolver(schema),
   });
@@ -64,10 +75,18 @@ export const SignInForm = ({ onSubmit }) => {
           errors={errors.password}
         />
 
-        <FormButton text="Sign in" submit={handleSubmit(onSubmit)} />
+        <FormInput
+          name="passwordConfirm"
+          placeholder="Password Confirm"
+          isSecure={true}
+          control={control}
+          errors={errors?.passwordConfirm}
+        />
+
+        <FormButton text="Sign up" submit={handleSubmit(onSubmit)} />
       </View>
     </>
   );
 };
 
-export default SignIn;
+export default SignUp;

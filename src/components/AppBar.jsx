@@ -6,6 +6,7 @@ import { useApolloClient, useQuery } from "@apollo/client/react";
 import { ME } from "../graphql/queries";
 import Text from "./Text";
 import useAuthStorage from "../hooks/useAuthStorage";
+import { useNavigate } from "react-router-native";
 
 const styles = StyleSheet.create({
   container: {
@@ -30,7 +31,18 @@ const AppBar = () => {
     <View style={styles.container}>
       <ScrollView horizontal contentContainerStyle={styles.scrollView}>
         <AppBarTab link="/" name="Repositories" />
-        {data?.me ? <SignOut /> : <AppBarTab link="/signin" name="Sign in" />}
+        {data?.me ? (
+          <>
+            <AppBarTab link="/create" name="Create a view" />
+            <AppBarTab link="/myReviews" name="My reviews" />
+            <SignOut />
+          </>
+        ) : (
+          <>
+            <AppBarTab link="/signIn" name="Sign in" />
+            <AppBarTab link="/signUp" name="Sign Up" />
+          </>
+        )}
       </ScrollView>
     </View>
   );
@@ -39,10 +51,12 @@ const AppBar = () => {
 const SignOut = () => {
   const authStorage = useAuthStorage();
   const apolloClient = useApolloClient();
+  const navitage = useNavigate();
 
   const onSubmit = async () => {
     await authStorage.removeAccessToken();
     apolloClient.resetStore();
+    navitage("/");
   };
 
   return (

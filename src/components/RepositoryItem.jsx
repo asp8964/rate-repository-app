@@ -1,6 +1,7 @@
-import { Image, StyleSheet, View } from "react-native";
+import { Image, Pressable, StyleSheet, View } from "react-native";
 import theme from "../theme";
 import Text from "./Text";
+import * as Linking from "expo-linking";
 
 const styles = StyleSheet.create({
   font: { font: theme.fonts.main },
@@ -54,13 +55,25 @@ const styles = StyleSheet.create({
     width: "25%",
     marginBottom: 10,
   },
+
+  bgBlue: {
+    padding: 15,
+    margin: 20,
+    backgroundColor: theme.colors.primary,
+    borderRadius: 5,
+    color: "white",
+    flexGrow: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
 });
 
 const RepositoryItem = ({ repo }) => {
   const convertNumber = (num) =>
     num >= 1000 ? (num / 1000).toFixed(1) + "k" : num;
+
   return (
-    <View style={styles.container}>
+    <View style={styles.container} testID="repositoryItem">
       <View style={styles.topContainer}>
         <Image source={{ uri: repo.ownerAvatarUrl }} style={styles.avatar} />
 
@@ -96,6 +109,18 @@ const RepositoryItem = ({ repo }) => {
           <Text color="gray">Rating</Text>
         </View>
       </View>
+      {repo?.url && (
+        <View>
+          <Pressable
+            style={styles.bgBlue}
+            onPress={() => Linking.openURL(repo.url)}
+          >
+            <Text color="label" fontWeight="bold" fontSize="subheading">
+              Open in Github
+            </Text>
+          </Pressable>
+        </View>
+      )}
     </View>
   );
 };

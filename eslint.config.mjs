@@ -4,6 +4,8 @@ import { fixupPluginRules } from "@eslint/compat";
 import { defineConfig } from "eslint/config";
 import js from "@eslint/js";
 import globals from "globals";
+import pluginJest from "eslint-plugin-jest";
+import testingLibrary from "eslint-plugin-testing-library";
 
 export default defineConfig([
   { languageOptions: { globals: globals.node } },
@@ -19,8 +21,12 @@ export default defineConfig([
   },
   {
     files: ["src/**/*.js", "src/**/*.jsx"],
-
-    plugins: { reactPlugin, "react-native": fixupPluginRules(reactNative) },
+    ...testingLibrary.configs["flat/marko"],
+    plugins: {
+      reactPlugin,
+      "react-native": fixupPluginRules(reactNative),
+      jest: pluginJest,
+    },
     languageOptions: {
       parserOptions: {
         sourceType: "module",
@@ -28,12 +34,7 @@ export default defineConfig([
           jsx: true,
         },
       },
-      globals: {
-        // ...globals.browser,
-        ...globals.node,
-        console: true,
-        process: true,
-      },
+      globals: pluginJest.environments.globals.globals,
     },
     rules: {
       "react/prop-types": "off",
